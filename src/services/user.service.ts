@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import type { Response } from "express";
 import type { RegisterModel } from "../models/register.model";
+import type { EditModel } from "../models/edit.model";
 
 const repo = AppDataSource.getRepository(UserTable)
 const tokenSecret = process.env.JWT_SECRET
@@ -24,12 +25,12 @@ export class UserService {
                 id: user?.userId,
                 email: user?.email
             }
-            console.log(payload)
 
             return {
                 name: user?.email,
                 access: jwt.sign(payload, tokenSecret!, { expiresIn: accessTTL }),
-                refresh: jwt.sign(payload, tokenSecret!, { expiresIn: refreshTTL })
+                refresh: jwt.sign(payload, tokenSecret!, { expiresIn: refreshTTL }),
+                userId: user?.userId
             }
         }
 
@@ -37,7 +38,7 @@ export class UserService {
     }
 
     static async verifyToken(req: any, res: Response, next: Function) {
-        const whitelist = ['/api/user/login', '/api/user/refresh', '/api/register']
+        const whitelist = ['/api/user/login', '/api/user/refresh', '/api/user/register', 'api/user/edit']
 
         if (whitelist.includes(req.path)) {
             next()
@@ -82,7 +83,8 @@ export class UserService {
         return {
             name: user?.email,
             access: jwt.sign(payload, tokenSecret!, { expiresIn: accessTTL }),
-            refresh: token
+            refresh: token,
+            userId: user?.userId
         }
     }
 
@@ -98,12 +100,50 @@ export class UserService {
         await repo.save({
             email: model.email,
             password: hashed,
-            name: model.username
+            userName: model.name
         })
+        console.log('we got here')
     }
 
-    static async changePassword() {
+    static async editUser(id: number, edit:EditModel) { 
+          
+        const data = await repo.findOne({
+            where:{
+                userId: id,
+                deletedAt:IsNull()
+            }
+        })
+        if(data == null){
+            throw new Error('USER_DOES_NOT_EXIST')
+        }
+        const hashed = await bcrypt.hash(edit.password, 12)
+        await repo.update({userId: data.userId},{userName:edit.username, password:hashed, updatedAt: new Date()})
+    }
 
+    static async getUsers() {
+        const data = await repo.find({
+            where: {
+                deletedAt: IsNull()
+            }
+        })
+        if (data == null) {
+            throw new Error("NO_USERS___SOMEHOW")
+        }
+        return data
+    }
+
+    static async getUserById(id: number) {
+        const data = repo.findOne({
+            where: {
+                userId: id,
+                deletedAt: IsNull()
+            }
+        })
+
+        if (data == null) 
+            throw new Error("USER_NOT_EXIST")
+
+        return data
     }
 
     static async getUserByEmail(email: string) {

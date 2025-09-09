@@ -4,6 +4,32 @@ import { sendError } from "../utils"
 
 export const UserRoute = Router()
 
+UserRoute.get('/', async (req, res) => {
+    try {
+        res.json(await UserService.getUsers())
+    } catch (e) {
+        sendError(res, e)
+    }
+})
+
+UserRoute.get('/:id', async (req, res) => {
+    try {
+        const id = Number(req.params.id)
+        res.json(await UserService.getUserById(id))
+    } catch (e) {
+        sendError(res, e)
+    }
+})
+
+UserRoute.post('/:id/edit', async (require, res) =>{
+    try {
+        const id = Number(require.params.id)
+        await UserService.editUser(id, require.body)
+    }catch (e) {
+        sendError(res, e)
+    }
+})
+
 UserRoute.post('/login', async (req, res) => {
     console.log("login chekpoint 1")
     try {
@@ -19,6 +45,7 @@ UserRoute.post('/login', async (req, res) => {
 
 UserRoute.post('/register', async (req, res) =>{
     try{
+        console.log(req.body)
         res.json(await UserService.register(req.body))
     } catch (e: any){
         sendError(res, e)

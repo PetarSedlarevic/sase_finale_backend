@@ -6,17 +6,15 @@ import type { MessageModel } from "../models/message.model";
 const repo = AppDataSource.getRepository(MessageTable)
 
 export class MessageService {
+    
     static async postMessage(model: MessageModel, userId: number){
-        // const data = await repo.existsBy({
-        //     message: model.messageId,
-        //     deletedAt: IsNull()
-        // })
+        console.log(model)
+        console.log(userId)
 
         await repo.save({
-            messageId: model.messageId,
             title: model.title,
             content: model.content,
-            adddedBy: model.userId
+            userId: userId
         })
     }
 

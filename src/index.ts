@@ -15,9 +15,9 @@ app.use(express.json())
 app.use(cors())
 app.use(morgan('tiny'))
 
-//app.use(UserService.verifyToken)
+app.use(UserService.verifyToken)
 app.use('/api/user', UserRoute)
-app.use('/api/messages', MessageRoute)
+app.use('/api/message', MessageRoute)
 
 app.get('/', (req, res) => {     // had to use a / because * was giving me erros 
     res.status(404).json({
@@ -27,8 +27,8 @@ app.get('/', (req, res) => {     // had to use a / because * was giving me erros
 })
 
 const sslOptions = {
-    key: fs.readFileSync('./src/crypto/pub.pem'),
-    cert: fs.readFileSync('./src/crypto/priv.pem')
+    key: fs.readFileSync('./src/crypto/key.pem'),
+    cert: fs.readFileSync('./src/crypto/cert.pem')
 }
 
 configDotenv()

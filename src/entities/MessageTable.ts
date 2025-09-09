@@ -15,7 +15,7 @@ export class MessageTable {
   @PrimaryGeneratedColumn({ type: "int", name: "message_id", unsigned: true })
   messageId: number;
 
-  @Column("int", { name: "user_id", unique: true, unsigned: true })
+  @Column("int", { name: "user_id", unsigned: true })
   userId: number;
 
   @Column("text", { name: "content" })
