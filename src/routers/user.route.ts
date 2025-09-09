@@ -5,8 +5,10 @@ import { sendError } from "../utils"
 export const UserRoute = Router()
 
 UserRoute.post('/login', async (req, res) => {
+    console.log("login chekpoint 1")
     try {
         res.json(await UserService.login(req.body))
+        console.log(res)
     } catch (e: any) {
         res.status(401).json({
             message: e.message,

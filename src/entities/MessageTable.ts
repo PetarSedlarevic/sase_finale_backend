@@ -21,6 +21,9 @@ export class MessageTable {
   @Column("text", { name: "content" })
   content: string;
 
+  @Column("text", { name: "title" })
+  title: string;
+
   @Column("datetime", {
     name: "created_at",
     default: () => "CURRENT_TIMESTAMP",

@@ -15,13 +15,16 @@ const refreshTTL = process.env.JWT_REFRESH_TTL
 export class UserService {
 
     static async login(model: LoginModel) {
+        console.log('Back Checkpoint 1')
         const user = await this.getUserByEmail(model.email)
 
         if (await bcrypt.compare(model.password, user!.password)) {
+            console.log('if checkpoint reached')
             const payload = {
                 id: user?.userId,
                 email: user?.email
             }
+            console.log(payload)
 
             return {
                 name: user?.email,
@@ -34,7 +37,7 @@ export class UserService {
     }
 
     static async verifyToken(req: any, res: Response, next: Function) {
-        const whitelist = ['/api/user/login','/api/user/refresh', '/api/register']
+        const whitelist = ['/api/user/login', '/api/user/refresh', '/api/register']
 
         if (whitelist.includes(req.path)) {
             next()
@@ -74,6 +77,7 @@ export class UserService {
             id: user?.userId,
             email: user?.email
         }
+
 
         return {
             name: user?.email,
